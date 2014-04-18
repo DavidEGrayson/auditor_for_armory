@@ -54,6 +54,10 @@ describe AuditorForArmory::Wallet do
       described_class.from_paper_backup paper_backup
     end
     
+    it 'has the right ID' do
+      expect(subject.wallet_id). to eq 'zkRR49p3'
+    end
+    
     it 'has the right addresses' do
       expect(subject.hash160(1)).to eq "\x06\x95\xc9\xf7\x73\xe4\xb4\xfb\xb5\xa5\xc8\xf4\x2d\xd1\x5a\x2c\xaa\x9e\x26\x83"
       expect(subject.address(1)).to eq '1bpVfmdYbMbzdiGXxPQUwitPjVzpVKk3n'

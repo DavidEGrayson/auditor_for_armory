@@ -6,13 +6,19 @@ require 'digest'
 
 module AuditorForArmory
   class Wallet
+    AddressStartByte = "\x00"  # address first byte for bitcoin main network
+  
     # @param root_key (Integer)
     # @param chain_code (Integer)
     def initialize(root_key, chain_code = self.class.chain_code_from_root_key(root_key))
-      #@private_key = root_key
       @chain_code = chain_code
       @private_keys = [root_key]
       @public_keys = []
+    end
+    
+    # Mimics calcWalletIDFromRoot in Bitcoin Armory.
+    def wallet_id    
+      base58_encode_binary (AddressStartByte + hash160(1)[0, 5]).reverse
     end
     
     def address(num)
@@ -66,16 +72,11 @@ module AuditorForArmory
       # calls ComputeChainedPrivateKey from in EncryptionUtils.cpp
 
       public_key = group.new_point private_key      
-      # TODO: try with compression the other way
       public_key_binary = ECDSA::Format::PointOctetString.encode(public_key, compression: false)
       public_key_hash = hash256 public_key_binary
       public_key_hash_num = ECDSA::Format::IntegerOctetString.decode public_key_hash
-      
-      #puts "a"
-      #p chain_code
-      #p public_key_hash_num
+
       a = chain_code ^ public_key_hash_num
-      
       field = ECDSA::PrimeField.new(group.order)
       field.mod(a * private_key)
     end

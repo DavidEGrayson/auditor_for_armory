@@ -18,6 +18,11 @@ def base58_encode(number)
   result.reverse
 end
 
+def base58_encode_binary(data)
+  leading_zero_count = data.match(/\A(\0*)/)[1].size
+  '1' * leading_zero_count + base58_encode(ECDSA::Format::IntegerOctetString.decode data)
+end
+
 def base58check_checksum(data)
   Digest::SHA256.digest(Digest::SHA256.digest(data))[0, 4]
 end
@@ -37,9 +42,7 @@ end
 
 def base58check_encode(version, payload)
   checksum = base58check_checksum version + payload
-  data = version + payload + checksum
-  leading_zero_count = data.match(/\A(\0*)/)[1].size
-  '1' * leading_zero_count + base58_encode(ECDSA::Format::IntegerOctetString.decode data)
+  base58_encode_binary version + payload + checksum
 end
 
 def private_key_decode(string)
