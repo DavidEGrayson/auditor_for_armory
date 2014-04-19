@@ -1,7 +1,5 @@
 # encoding: US-ASCII
 
-# TODO: should we use compression by default?
-
 require 'digest'
 
 module BitcoinAddressUtils

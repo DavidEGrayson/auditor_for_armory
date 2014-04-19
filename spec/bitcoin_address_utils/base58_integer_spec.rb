@@ -38,4 +38,12 @@ describe BitcoinAddressUtils::Base58Integer do
         'Character is not valid in base 58: "-".'
     end
   end
+  
+  describe 'Chars' do
+    it 'are sorted' do
+      # This could be very useful in some cases.  For example, if you have a sorted list of
+      # addresses and you want to look for all addresses in a certain range of hash160 values.
+      expect(described_class::Chars).to eq described_class::Chars.sort
+    end
+  end
 end

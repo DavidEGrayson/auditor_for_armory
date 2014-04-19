@@ -5,10 +5,13 @@ module BitcoinAddressUtils
   module Base58Check
     def self.decode(string)
       str = BitcoinAddressUtils::Base58Binary.decode string
-      # TODO: raise DecodeError is string is less than 5 bytes
+      if str.size < 5
+        raise DecodeError, "Decoded string not long enough: expected at least 5 bytes, got #{str.size}."
+      end
       if str[-4, 4] != checksum(str[0, str.size - 4])
         raise DecodeError, "Invalid checksum."
       end
+      
       version = str[0].ord
       payload = str[1, str.size - 5]
       [version, payload]
