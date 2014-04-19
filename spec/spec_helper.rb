@@ -1,3 +1,8 @@
+if ENV['COVERAGE'] == 'Y'
+  require 'simplecov'
+  SimpleCov.start
+end
+
 $LOAD_PATH << 'lib'
 require 'auditor_for_armory'
 
