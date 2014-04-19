@@ -10,10 +10,10 @@ module BitcoinAddressUtils
     def self.encode(integer)
       raise ArgumentError, 'Integer to encode is negative.' if integer < 0
 
-      string = ''
+      string = ''.force_encoding('BINARY')
       while integer > 0
         integer, remainder = integer.divmod 256
-        string << Chars[remainder]
+        string << remainder.chr
       end
       string.reverse
     end
@@ -21,7 +21,7 @@ module BitcoinAddressUtils
     # @param string (String)
     # @return (Integer)
     def self.decode(string)
-      string.bytes.reduce { |n, b| (n << 8) + b }
+      string.bytes.reduce(0) { |n, b| (n << 8) + b }
     end
   end
 end

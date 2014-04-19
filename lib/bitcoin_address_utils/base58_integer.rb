@@ -1,3 +1,5 @@
+require_relative 'decode_error'
+
 module BitcoinAddressUtils
   # This module provides methods for converting between unsigned integers
   # and base 58 strings.
@@ -16,9 +18,10 @@ module BitcoinAddressUtils
     end
     
     def self.decode(string)
+      string = string.dup.force_encoding('BINARY')
       string.each_char.reduce(0) do |result, char|
         value = Chars.index(char)
-        raise DecodeError, "Invalid character #{char.inspect}." unless value
+        raise DecodeError, "Character is not valid in base 58: #{char.inspect}." if !value
         result * 58 + value
       end
     end
