@@ -1,18 +1,17 @@
 # encoding: US-ASCII
 
+# TODO: should we use compression by default?
+
 require 'digest'
 
 module BitcoinAddressUtils
   # This module provides a method for creating Bitcoin addresses.
   #
-  # Some wallets like Multibit incorrectly use ECDSA point compression
-  # when generating addresses.
-  #
   # https://en.bitcoin.it/wiki/Technical_background_of_Bitcoin_addresses
   module Address
     def self.from_base58_private_key(string, opts = {})
-      private_key = Base58PrivateKey.decode(string)
-      from_private_key private_key, opts
+      public_key_binary = Base58PrivateKey.convert_to_public_key_binary(string)
+      from_public_key public_key_binary, opts
     end
 
     def self.from_private_key(input, opts = {})

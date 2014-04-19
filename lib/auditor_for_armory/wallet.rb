@@ -8,6 +8,8 @@ module AuditorForArmory
   class Wallet
     AddressStartByte = "\x00"  # address first byte for bitcoin main network
 
+    attr_accessor :chain_code
+    
     # @param root_key (Integer)
     # @param chain_code (Integer)
     def initialize(root_key, chain_code = self.class.chain_code_from_root_key(root_key))
@@ -73,9 +75,7 @@ module AuditorForArmory
       public_key_hash = BitcoinAddressUtils.hash256 public_key_binary
       public_key_hash_num = ECDSA::Format::IntegerOctetString.decode public_key_hash
 
-      a = chain_code ^ public_key_hash_num
-      field = ECDSA::PrimeField.new(BitcoinAddressUtils.ecdsa_group.order)
-      field.mod(a * private_key)
+      (private_key * (chain_code ^ public_key_hash_num)) % BitcoinAddressUtils.ecdsa_group.order
     end
 
     # Mimics DeriveChaincodeFromRootKey in Armory source.

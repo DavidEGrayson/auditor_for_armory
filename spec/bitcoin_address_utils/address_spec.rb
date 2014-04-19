@@ -3,6 +3,20 @@ require 'spec_helper'
 
 describe BitcoinAddressUtils::Address do
 
+  describe '.from_base58_private_key' do
+    it 'converts the private key from the wiki (compression off)' do
+      # Source: https://en.bitcoin.it/wiki/Private_key#Base_58_Wallet_Import_format
+      address = described_class.from_base58_private_key '5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF'
+      expect(address).to eq '1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj'
+    end
+
+    it 'converts the private key from the wiki (compression on)' do
+      # Source: https://bitcointalk.org/index.php?topic=129652.msg1697154#msg1697154
+      address = described_class.from_base58_private_key 'KyvGbxRUoofdw3TNydWn2Z78dBHSy2odn1d3wXWN2o3SAtccFNJL'
+      expect(address).to eq '1JMsC6fCtYWkTjPPdDrYX3we2aBrewuEM3'
+    end
+  end
+
   describe '.from_private_key' do
     it 'converts the private key from the wiki' do
       # Source: https://en.bitcoin.it/wiki/Technical_background_of_Bitcoin_addresses
@@ -50,6 +64,10 @@ describe BitcoinAddressUtils::Address do
     it 'takes a version argument' do
       # Dogecoin public key
       expect(described_class.from_hash160(hash160, version: 30)).to eq 'DTrh8WSyeGPxGKiwhN5DZdaq71dYTvekV3'
+    end
+    
+    pending 'rejects inputs that are not 160-bit' do
+    
     end
   end
 
