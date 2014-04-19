@@ -1,5 +1,5 @@
 $LOAD_PATH << 'lib'
-require 'auditor-for-armory'
+require 'auditor_for_armory'
 
 # TODO: make a utility to find the first address in an Armory wallet,
 #  given the wallet ID and the set of all known addresses.

@@ -1,8 +1,8 @@
 # coding: ASCII-8BIT
 
-require_relative 'sixteen_easy_bytes'
-require_relative 'bitcoin-address-utils'
 require 'digest'
+require 'bitcoin_address_utils'
+require_relative 'sixteen_easy_bytes'
 
 module AuditorForArmory
   class Wallet

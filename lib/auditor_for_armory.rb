@@ -1,1 +1,1 @@
-require_relative 'auditor-for-armory/wallet'
+require_relative 'auditor_for_armory/wallet'
