@@ -9,6 +9,8 @@ describe AuditorForArmory::Wallet do
   end
 
   specify 'armory test wallet reproduction steps' do
+    # This might look like a mess, but it will be very helpful if the other more
+    # succinct tests ever fail and we don't immediately know why.
     root_key_binary = described_class.decode_private_key_binary(paper_backup)
     expect(root_key_binary).to eq "]b\x1f\xf0z\x99\xd9W\x14\xffk\x04\x1e\x92aJ`\xde\xdaE\x1b\xabe\x1f\xf5\x94\xf1]a\xbb\xdbi"
     
@@ -21,7 +23,6 @@ describe AuditorForArmory::Wallet do
     chain_code = described_class.chain_code_from_root_key root_key
     expect(chain_code).to eq ECDSA::Format::IntegerOctetString.decode hash2
 
-    
     group = ECDSA::Group::Secp256k1
     public_key = group.new_point root_key
     public_key_binary = ECDSA::Format::PointOctetString.encode public_key
