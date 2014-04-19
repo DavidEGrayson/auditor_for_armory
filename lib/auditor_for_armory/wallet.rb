@@ -17,17 +17,18 @@ module AuditorForArmory
     end
     
     # Mimics calcWalletIDFromRoot in Bitcoin Armory.
-    def wallet_id    
-      BitcoinAddressUtils::Base58Binary.encode (AddressStartByte + hash160(1)[0, 5]).reverse
+    def wallet_id
+      data = (AddressStartByte + hash160(1)[0, 5]).reverse
+      BitcoinAddressUtils::Base58Binary.encode data
     end
     
     def address(num)
-      bitcoin_address public_key(num), false
+      BitcoinAddressUtils::Address.from_public_key public_key(num)
     end
     
     def hash160(num)
       string = ECDSA::Format::PointOctetString.encode(public_key(num), compression: false)
-      hash = Digest::RMD160.digest Digest::SHA256.digest string
+      hash = BitcoinAddressUtils.hash160 string
     end
     
     def public_key(num)
@@ -73,7 +74,7 @@ module AuditorForArmory
 
       public_key = group.new_point private_key      
       public_key_binary = ECDSA::Format::PointOctetString.encode(public_key, compression: false)
-      public_key_hash = hash256 public_key_binary
+      public_key_hash = BitcoinAddressUtils.hash256 public_key_binary
       public_key_hash_num = ECDSA::Format::IntegerOctetString.decode public_key_hash
 
       a = chain_code ^ public_key_hash_num
@@ -88,12 +89,8 @@ module AuditorForArmory
     # Mimics DeriveChaincodeFromRootKey in Armory source.
     def self.chain_code_from_root_key(root_key)
       root_key_binary = ECDSA::Format::IntegerOctetString.encode root_key, 32
-      chain_code_binary = hmac256 hash256(root_key_binary), 'Derive Chaincode from Root Key'
+      chain_code_binary = hmac256 BitcoinAddressUtils.hash256(root_key_binary), 'Derive Chaincode from Root Key'
       ECDSA::Format::IntegerOctetString.decode chain_code_binary
-    end
-    
-    def self.hash256(string)
-      Digest::SHA256.digest Digest::SHA256.digest string
     end
     
     def self.hmac256(key, string)

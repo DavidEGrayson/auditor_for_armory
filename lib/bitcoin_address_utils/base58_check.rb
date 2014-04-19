@@ -24,7 +24,7 @@ module BitcoinAddressUtils
     end
     
     def self.checksum(data)
-      BitcoinAddressUtils.double_sha256(data)[0, 4]
+      BitcoinAddressUtils.hash256(data)[0, 4]
     end
   end
 end

@@ -12,7 +12,7 @@ describe AuditorForArmory::Wallet do
     root_key_binary = described_class.decode_private_key_binary(paper_backup)
     expect(root_key_binary).to eq "]b\x1f\xf0z\x99\xd9W\x14\xffk\x04\x1e\x92aJ`\xde\xdaE\x1b\xabe\x1f\xf5\x94\xf1]a\xbb\xdbi"
     
-    hash1 = described_class.hash256 root_key_binary
+    hash1 = BitcoinAddressUtils.hash256 root_key_binary
     expect(hash1).to eq "\xc6\xd6H\xc0\x97\xcd\xe3hY\x86(\x96>q\xc6\x07lk\x10U\x99#\x18\x17\x97\xff\x8c\xd0\x0c\xeb!-"    
     hash2 = described_class.hmac256 hash1, 'Derive Chaincode from Root Key'
     expect(hash2).to eq "~\x1bt\x8a\xf8\xab\xd5\xb8\\\xf0\xe05w\xc6]\xc7\x07\xcd}\xb8y\x98\xb3\xfd\xdf\xbdV\x8e\xa5D\x94\x99"
@@ -29,7 +29,7 @@ describe AuditorForArmory::Wallet do
       "^e'#&^.\x97\x96w\xe6n\xeeJ\x96\xca\xb2E\x92\xf5\rV\x7f\nA\xfd\xe6?\xf34\xa0\xf3" \
       "\xf2\xe2\x14[U\x81\x89\x00\x18\x7f\x1b\xe8\xe1/t@\x9c\xc9\xef\x89\xec\x9e\xeau\x9au\xea\x1e\xa9\xc8AC"
     
-    chain_mod_binary = described_class.hash256 public_key_binary
+    chain_mod_binary = BitcoinAddressUtils.hash256 public_key_binary
     chain_mod = ECDSA::Format::IntegerOctetString.decode chain_mod_binary
     expect(chain_mod).to eq 0xd4066ff5ba05db7c5d3f918b680887039f5d9015bb6ae30aa102f7f9ea4e13a1
     chain_xor = chain_code ^ chain_mod    
@@ -64,12 +64,6 @@ describe AuditorForArmory::Wallet do
       expect(subject.address(2)).to eq '1P6Yih7wihx9CxKc3Fm9b6xg6qvMPckYdo'
       expect(subject.address(3)).to eq '1KHFzmGxPbz3MeMBr5CJrksJGmaW1CnVoB'
       expect(subject.address(4)).to eq '1DNNy3DDLCdWwStXPBaFTMC55YCwiCbNgo'
-    end
-    
-    describe 'hash256' do
-      it 'behaves like the hash256 method from Armory' do
-        expect(described_class.hash256('abcde')).to start_with "\x1d\x72\xb6\xeb"
-      end
     end
     
     describe 'HMAC256' do

@@ -12,8 +12,12 @@ module BitcoinAddressUtils
     ECDSA::Group::Secp256k1
   end
   
-  def self.double_sha256(string)
+  def self.hash256(string)
     Digest::SHA256.digest Digest::SHA256.digest string
+  end
+  
+  def self.hash160(string)
+    Digest::RMD160.digest Digest::SHA256.digest string
   end
 end
 
