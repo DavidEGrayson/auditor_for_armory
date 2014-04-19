@@ -68,8 +68,12 @@ describe BitcoinAddressUtils::Address do
       expect(described_class.from_hash160(hash160, version: 30)).to eq 'DTrh8WSyeGPxGKiwhN5DZdaq71dYTvekV3'
     end
     
-    pending 'rejects inputs that are not 160-bit' do
-    
+    it 'rejects inputs that are not 160-bit' do
+      # This is NOT a DecodeError; the hash160 will probably come from an
+      # internal part of the program and converting it to an address makes it
+      # go futher away from being a usage integer, so it's not really decoding.
+      expect { described_class.from_hash160("\x00" * 19) }.to raise_error(
+        ArgumentError, 'Expected 20 bytes in hash160, got 19.')
     end
   end
 
