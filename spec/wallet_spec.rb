@@ -75,8 +75,18 @@ describe AuditorForArmory::Wallet do
   end
 
   describe 'HMAC256' do
-    it 'behaves like the HMAC256 method from Armory' do
-      expect(described_class.hmac256('abcde', 'Derive Chaincode from Root Key')).to start_with "\x13\xf2\xfa\x91"
+    context 'for keys up to 32 bytes long' do
+      it 'behaves like the HMAC256 method from Armory' do
+        # This test case was made by running Armory code from the Python REPL.
+        expect(described_class.hmac256('abcde', 'Derive Chaincode from Root Key')).to start_with "\x13\xf2\xfa\x91"
+      end
+    end
+    
+    context 'for keys longer than 32 bytes' do
+      it 'behaves like the HMAC256 method from Armory' do
+        # This test case was made by running Armory code from the Python REPL.
+        expect(described_class.hmac256('a' * 33, 'hi')).to start_with "Whc\x02"        
+      end
     end
   end
 

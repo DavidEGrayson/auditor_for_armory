@@ -26,7 +26,7 @@ module BitcoinAddressUtils
       when String
         string = public_key
       else
-        raise ArgumentError, "Invalid input for creating a Bitcoin address."
+        raise ArgumentError, "Invalid public key: #{public_key.inspect}."
       end
       hash = Digest::RMD160.digest Digest::SHA256.digest string
       from_hash160 hash, opts

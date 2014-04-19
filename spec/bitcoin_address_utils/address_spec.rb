@@ -59,6 +59,12 @@ describe BitcoinAddressUtils::Address do
       expect { described_class.from_public_key('', 7 => 2, compression: false) }.to raise_error(
         ArgumentError, "Unrecognized options: [7].")
     end
+    
+    it 'complains if the input is not a String or ECDSA::Point' do
+      expect { described_class.from_public_key(:x) }.to raise_error(
+        ArgumentError, "Invalid public key: :x."
+      )
+    end
   end
 
   describe '.from_hash160' do
