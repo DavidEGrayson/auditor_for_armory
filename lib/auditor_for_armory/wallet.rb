@@ -18,7 +18,7 @@ module AuditorForArmory
     
     # Mimics calcWalletIDFromRoot in Bitcoin Armory.
     def wallet_id    
-      base58_encode_binary (AddressStartByte + hash160(1)[0, 5]).reverse
+      BitcoinAddressUtils::Base58Binary.encode (AddressStartByte + hash160(1)[0, 5]).reverse
     end
     
     def address(num)
