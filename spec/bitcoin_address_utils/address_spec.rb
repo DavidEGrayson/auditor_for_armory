@@ -54,6 +54,11 @@ describe BitcoinAddressUtils::Address do
       string = ECDSA::Format::PointOctetString.encode(public_key, compression: false)
       expect(described_class.from_public_key(string)).to eq address
     end
+    
+    it 'complains about invalid options' do
+      expect { described_class.from_public_key('', 7 => 2, compression: false) }.to raise_error(
+        ArgumentError, "Unrecognized options: [7].")
+    end
   end
 
   describe '.from_hash160' do
@@ -74,6 +79,11 @@ describe BitcoinAddressUtils::Address do
       # go futher away from being a usage integer, so it's not really decoding.
       expect { described_class.from_hash160("\x00" * 19) }.to raise_error(
         ArgumentError, 'Expected 20 bytes in hash160, got 19.')
+    end
+    
+    it 'complains about invalid options' do
+      expect { described_class.from_hash160('', 7 => 2, version: 10) }.to raise_error(
+        ArgumentError, "Unrecognized options: [7].")
     end
   end
 
