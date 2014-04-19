@@ -1,6 +1,8 @@
 # encoding: ASCII-8BIT
 require 'spec_helper'
 
+# TODO: everything that takes opts should complain about invalid keys
+
 describe BitcoinAddressUtils::Address do
 
   describe '.from_base58_private_key' do

@@ -72,7 +72,6 @@ describe AuditorForArmory::Wallet do
     expect(root_private_key).to eq root_private_key
     chain_code = described_class.chain_code_from_root_key root_private_key
     expect(chain_code).to eq ECDSA::Format::IntegerOctetString.decode hash2
-    puts '%#x' % chain_code
 
     group = ECDSA::Group::Secp256k1
     root_public_key = group.new_point root_private_key
