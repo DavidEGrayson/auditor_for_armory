@@ -17,11 +17,15 @@ module BitcoinAddressUtils
 
     def self.decode_with_metadata(string)
       read_version, data = Base58Check.decode string
+      
       if read_version != Version
-        raise DecodeError, "Expected version byte of public key to be %#x, got %#x." % [Version, read_version]
+        msg = 'Expected version byte of private key to be %#x, got %#x.'
+        raise DecodeError, msg % [Version, read_version]
       end
+      
       if data.size < 32
-        raise DecodeError, "Expected at least 32 bytes of data in private key, got "
+        msg = 'Decoded private key string not long enough: expected at least 32 bytes, got %d.'
+        raise DecodeError, msg % data.size
       end
 
       # The first 32 bytes are the private key.
