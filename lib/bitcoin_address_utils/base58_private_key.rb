@@ -1,11 +1,9 @@
 # coding: ASCII-8BIT
 
-# The difference between "compressed" and "uncompressed" private keys is
-# explained well here:  https://bitcointalk.org/index.php?topic=129652.msg1384929#msg1384929
-
-# TODO: fix all calls to String#hex_inspect here and elsewhere, perhaps replacing with Hex.decode and Hex.encode.
-
 module BitcoinAddressUtils
+  # The difference between "compressed" and "uncompressed" private keys is
+  # explained well here:  https://bitcointalk.org/index.php?topic=129652.msg1384929#msg1384929
+  #
   # This is also known as Wallet Import Format (WIF), but modern wallets
   # are not just lists of private keys, so we don't use that name.
   module Base58PrivateKey
@@ -51,7 +49,7 @@ module BitcoinAddressUtils
       metadata = case string
         when "\x01" then { compression: true }
         when "" then { compression: false }
-        else raise DecodeError, "Unrecognized metadata in private key: #{string.hex_inspect}."
+        else raise DecodeError, "Unrecognized metadata in private key: #{string.unpack('H*').first}."
         end
     end
 

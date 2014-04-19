@@ -39,6 +39,14 @@ describe BitcoinAddressUtils::Base58PrivateKey do
       expect(private_key).to eq private_key
       expect(metadata).to eq compression: false
     end
+    
+    it 'complains if the metadata is not recognized' do
+      data = ("\x22" * 32) + "\x44\x55"
+      b58c = BitcoinAddressUtils::Base58Check.encode(0x80, data)
+      expect { described_class.decode_with_metadata b58c }.to raise_error(
+        BitcoinAddressUtils::DecodeError, "Unrecognized metadata in private key: 4455."
+      )
+    end
   end
   
   describe '.decode' do
