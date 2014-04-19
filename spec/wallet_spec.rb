@@ -7,10 +7,6 @@ describe AuditorForArmory::Wallet do
     0x5d621ff07a99d95714ff6b041e92614a60deda451bab651ff594f15d61bbdb69
   end
 
-  let(:root_public_key) do
-    BitcoinAddressUtils.ecdsa_group.new_point root_private_key
-  end
-
   let(:paper_backup) do
     "hijd snna kree iehk sgnn jtag soed jsgr njhg\n" \
     "jaio irgh strt jhsn nheg nshi jstt itje gard"
