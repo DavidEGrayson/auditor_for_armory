@@ -28,6 +28,12 @@ describe BitcoinAddressUtils::Address do
       expect(described_class.from_public_key(public_key)).to eq address
     end
 
+    it 'has an ECDSA compression option' do
+      # To support wallets that calculate addresses that way.
+      alt_address = '1P3yG3ekBWYn7xQYVchE1y5UVZfSLADPZU'
+      expect(described_class.from_public_key(public_key, compression: true)).to eq alt_address
+    end
+
     it 'can take an ECDSA integer octet string' do
       string = ECDSA::Format::PointOctetString.encode(public_key, compression: false)
       expect(described_class.from_public_key(string)).to eq address
@@ -35,9 +41,15 @@ describe BitcoinAddressUtils::Address do
   end
 
   describe '.from_hash160' do
+    let(:hash160) { "\xf9\x30\xb2\x46\x74\xa3\x29\x44\x89\x71\x39\x8b\x9e\x2d\xfc\x6d\x9d\x04\xf1\xa6" }
+
     it 'works' do
-      hash160 = "\xf9\x30\xb2\x46\x74\xa3\x29\x44\x89\x71\x39\x8b\x9e\x2d\xfc\x6d\x9d\x04\xf1\xa6"
       expect(described_class.from_hash160(hash160)).to eq '1PibbFWLLrVfjKYLxn5f1sREDsuF55N2Aw'
+    end
+
+    it 'takes a version argument' do
+      # Dogecoin public key
+      expect(described_class.from_hash160(hash160, version: 30)).to eq 'DTrh8WSyeGPxGKiwhN5DZdaq71dYTvekV3'
     end
   end
 
