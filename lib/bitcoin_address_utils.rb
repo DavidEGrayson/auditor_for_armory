@@ -5,6 +5,7 @@ require_relative 'bitcoin_address_utils/binary_integer'
 require_relative 'bitcoin_address_utils/base58_integer'
 require_relative 'bitcoin_address_utils/base58_binary'
 require_relative 'bitcoin_address_utils/base58_check'
+require_relative 'bitcoin_address_utils/address'
 
 module BitcoinAddressUtils
   def self.ecdsa_group
@@ -22,12 +23,6 @@ def private_key_decode(string)
   data = data[0, data.size - 1]  # remove trailing "\x01" byte, not sure why it is there
   raise "Expected private key to be 32 bytes." if data.size != 32
   ECDSA::Format::IntegerOctetString.decode(data)
-end
-
-def bitcoin_address(public_key, compression)
-  string = ECDSA::Format::PointOctetString.encode(public_key, compression: compression)
-  hash = Digest::RMD160.digest Digest::SHA256.digest string
-  BitcoinAddressUtils::Base58Check.encode("\x00", hash)
 end
 
 # Print out the bitcoin address corresponding to this private key, assuming that

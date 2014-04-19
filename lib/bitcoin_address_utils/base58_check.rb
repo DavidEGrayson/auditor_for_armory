@@ -16,7 +16,7 @@ module BitcoinAddressUtils
     # @param version (Intger) A number between 0 and 255 and probably from https://en.bitcoin.it/wiki/List_of_address_prefixes
     # @praam payload (String) The data to encode.
     def self.encode(version, payload)
-      raise ArgumentError "Invalid version." if !(0..255).include?(version)
+      raise ArgumentError, "Invalid version: #{version.inspect}." if !(0..255).include?(version)
       version_byte = version.chr('BINARY')
       payload = payload.dup.force_encoding('BINARY')
       data = version_byte + payload
