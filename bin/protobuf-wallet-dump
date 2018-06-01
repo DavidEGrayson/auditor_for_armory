@@ -8,6 +8,8 @@
 # https://developers.google.com/protocol-buffers/docs/encoding#simple
 
 require 'date'
+require 'bitcoin_address_utils'
+include BitcoinAddressUtils
 
 class String
   def to_hex
@@ -58,16 +60,66 @@ module ProtobufReader
   end
 end
 
-EncryptionTypes = { 1 => :unencrypted, 2 => :encrypted_scrypt_aes }
+def print_unimplemented_field(number, value)
+  print "unimplemented field #{number}"
+  if value.is_a?(String) && value.size > 16
+    puts " with #{value.size} bytes"
+  else
+    puts " is #{value.inspect}"
+  end
+end
+
+EncryptionTypes = {
+  1 => :unencrypted,
+  2 => :encrypted_scrypt_aes
+}
+
+KeyTypes = {
+  1 => :original,
+  2 => :encrypted_scrypt_aes,
+  3 => :deterministic_mnemonic,
+  4 => :deterministic_key,
+}
+
+def key_dump(binary_data)
+  stream = StringIO.new(binary_data).extend(ProtobufReader)
+  puts "key:"
+  stream.each_pair do |field_number, value|
+    case field_number
+    when 1
+      puts " type: #{KeyTypes.fetch(value, value)}"
+    when 2
+      puts " secret_bytes: #{value.to_hex}"
+    when 6
+      puts " encrypted_data: #{value.to_hex}"
+    when 3
+      puts " public_key: #{value.to_hex}"
+      puts " address: #{Address.from_public_key(value)}"
+    when 4
+      puts " label: #{value.inspect}"
+    when 5
+      puts " creation_timestamp: #{value} = #{Time.at(value/1000)}"
+    when 7
+      puts " deterministic_key: (not shown)"
+    else
+      print_unimplemented_field(field_number, value)
+    end
+  end
+end
 
 def wallet_dump(stream)
   stream.extend ProtobufReader
+  binary_keys = []
   stream.each_pair do |field_number, value|
     case field_number
     when 1
       puts "network_identifier: #{value.inspect}"
     when 2
       puts "last_seen_block_hash:  #{value.to_hex}"
+    when 3
+      binary_keys << value
+    when 4
+      puts "transaction: (not shown)"
     when 5
       puts "encryption_type: #{EncryptionTypes.fetch(value, value)}"
     when 7
@@ -77,13 +129,12 @@ def wallet_dump(stream)
     when 14
       puts "last_seen_block_time_secs: #{value} = #{Time.at(value)}"
     else
-      print "unimplemented field #{field_number}"
-      if value.is_a?(String) && value.size > 16
-        puts " with #{value.size} bytes"
-      else
-        puts " is #{value.inspect}"
-      end
+      print_unimplemented_field(field_number, value)
     end
+  end
+
+  binary_keys.each do |binary_key|
+    key_dump(binary_key)
   end
 end
 
