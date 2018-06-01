@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+# Script for dumping keys from an unencrypted bitcoinj protobuf wallet
+# (e.g. from the Schildbach Bitcoin wallet for Android).
+
+# https://github.com/bitcoin-wallet/bitcoin-wallet/blob/master/wallet/README.recover.md#recovering-from-protobuf-wallet-format
+# https://github.com/bitcoinj/bitcoinj/blob/master/core/src/main/proto/wallet.proto
+
+module ProtobufReader
+  def read_varint
+    b = read(1).ord
+    raise "first byte is #{b}"
+  end
+end
+
+def wallet_dump(stream)
+  stream.extend ProtobufReader
+  i = stream.read_varint
+end
+
+if ARGV.empty?
+  puts "Usage: protobuf-wallet-dump DECRYPTED_FILENAME"
+  exit 1
+end
+
+wallet_dump(File.open(ARGV[0], 'rb'))
