@@ -16,14 +16,14 @@ module BitcoinAddressUtils
     end
 
     def self.sha512(key, message)
-      block_size = 512 / 8
+      block_size = 128
       hash = Digest::SHA512.method(:digest)
       key = hash.(key) if key.size > block_size
       key << "\x00" * (block_size - key.size)
-      inkey = HMAC.xor(key, "\x36" * block_size)
-      hash1 = hash.(inkey + message)
-      outkey = HMAC.xor(key, "\x5C" * block_size)
-      hash.(outkey + hash1)
+      ikey = HMAC.xor(key, "\x36" * block_size)
+      hash1 = hash.(ikey + message)
+      okey = HMAC.xor(key, "\x5C" * block_size)
+      hash.(okey + hash1)
     end
   end
 end

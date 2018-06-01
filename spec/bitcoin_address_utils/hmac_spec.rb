@@ -9,6 +9,5 @@ describe BitcoinAddressUtils::HMAC do
     expected = OpenSSL::HMAC.digest("SHA512", key, message)
     actual = described_class.sha512(key, message)
     expect(actual).to eq expected
-    p actual, expected
   end
 end
