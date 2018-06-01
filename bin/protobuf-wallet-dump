@@ -7,14 +7,24 @@
 # https://github.com/bitcoinj/bitcoinj/blob/master/core/src/main/proto/wallet.proto
 # https://developers.google.com/protocol-buffers/docs/encoding#simple
 
+require 'date'
+
+class String
+  def to_hex
+    each_byte.map { |b| "%02x" % b }.join
+  end
+end
+
 module ProtobufReader
   WireTypes = [:varint, :bit64, :length_delimited,
     :start_group, :end_group, :'32bit', :type6, :type7]
   def read_varint
     value = 0
+    shift = 0
     while true
       b = read(1).ord
-      value = (value << 7) | (b & 0x7F)
+      value |= (b & 0x7F) << shift
+      shift += 7
       break if b[7] == 0
     end
     value
@@ -29,7 +39,10 @@ module ProtobufReader
 
   def read_pair
     field_number, wire_type = read_key
-    if wire_type == :length_delimited
+    case wire_type
+    when :varint
+      value = read_varint
+    when :length_delimited
       length = read_varint
       value = read(length)
     else
@@ -37,11 +50,41 @@ module ProtobufReader
     end
     [field_number, value]
   end
+
+  def each_pair
+    while !eof?
+      yield read_pair
+    end
+  end
 end
+
+EncryptionTypes = { 1 => :unencrypted, 2 => :encrypted_scrypt_aes }
 
 def wallet_dump(stream)
   stream.extend ProtobufReader
-  p stream.read_pair
+  stream.each_pair do |field_number, value|
+    case field_number
+    when 1
+      puts "network_identifier: #{value.inspect}"
+    when 2
+      puts "last_seen_block_hash:  #{value.to_hex}"
+    when 5
+      puts "encryption_type: #{EncryptionTypes.fetch(value, value)}"
+    when 7
+      puts "version: #{value}"
+    when 12
+      puts "last_seen_block_height: #{value}"
+    when 14
+      puts "last_seen_block_time_secs: #{value} = #{Time.at(value)}"
+    else
+      print "unimplemented field #{field_number}"
+      if value.is_a?(String) && value.size > 16
+        puts " with #{value.size} bytes"
+      else
+        puts " is #{value.inspect}"
+      end
+    end
+  end
 end
 
 if ARGV.empty?
