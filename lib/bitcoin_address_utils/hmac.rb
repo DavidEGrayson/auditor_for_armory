@@ -3,6 +3,7 @@
 require 'digest'
 
 module BitcoinAddressUtils
+  # https://tools.ietf.org/html/rfc2104
   module HMAC
     def self.xor(s1, s2)
       if s1.bytesize != s2.bytesize
