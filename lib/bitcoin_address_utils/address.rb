@@ -23,7 +23,7 @@ module BitcoinAddressUtils
       case public_key
       when ECDSA::Point
         string = ECDSA::Format::PointOctetString.encode(public_key,
-          compression: opts.fetch[:compression])
+          compression: opts[:compression])
       when String
         string = public_key
       else

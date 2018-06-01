@@ -81,30 +81,52 @@ KeyTypes = {
   4 => :deterministic_key,
 }
 
+def deterministic_key_dump(binary_data)
+  stream = StringIO.new(binary_data).extend(ProtobufReader)
+  stream.each_pair do |field_number, value|
+    case field_number
+    when 1
+      puts "  chain_code: #{value.to_hex}"
+    when 2
+      puts "  path: 0x%08x" % value
+    when 3
+      puts "  issued_subkeys: #{value}"
+    when 4
+      puts "  lookahead_size: #{value}"
+    when 5
+      puts "  is_following: #{value.inspect}"
+    when 6
+      puts "  sigs_required_to_spend: #{value}"
+    else
+      print_unimplemented_field(field_number, value)
+    end
+  end
+end
+
 def key_dump(binary_data)
   stream = StringIO.new(binary_data).extend(ProtobufReader)
   puts "key:"
   stream.each_pair do |field_number, value|
     case field_number
     when 1
-      puts " type: #{KeyTypes.fetch(value, value)}"
+      puts "  type: #{KeyTypes.fetch(value, value)}"
     when 2
-      puts " secret_bytes: #{value.to_hex}"
+      puts "  secret_bytes: #{value.to_hex}"
       if value.size == 32
-        puts " wif 0: #{Base58PrivateKey.encode(value)}"
-        puts " wif 1: #{Base58PrivateKey.encode(value, compression: true)}"
+        puts "  wif 0: #{Base58PrivateKey.encode(value)}"
+        puts "  wif 1: #{Base58PrivateKey.encode(value, compression: true)}"
       end
     when 6
-      puts " encrypted_data: #{value.to_hex}"
+      puts "  encrypted_data: #{value.to_hex}"
     when 3
-      puts " public_key: #{value.to_hex}"
-      puts " address: #{Address.from_public_key(value)}"
+      puts "  public_key: #{value.to_hex}"
+      puts "  address: #{Address.from_public_key(value)}"
     when 4
-      puts " label: #{value.inspect}"
+      puts "  label: #{value.inspect}"
     when 5
-      puts " creation_timestamp: #{value} = #{Time.at(value/1000)}"
+      puts "  creation_timestamp: #{value} = #{Time.at(value/1000)}"
     when 7
-      puts " deterministic_key: (not shown)"
+      deterministic_key_dump(value)
     else
       print_unimplemented_field(field_number, value)
     end
