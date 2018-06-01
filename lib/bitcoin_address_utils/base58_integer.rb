@@ -5,7 +5,7 @@ module BitcoinAddressUtils
   # and base 58 strings.
   module Base58Integer
     Chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'.split('')
-    
+
     def self.encode(integer)
       raise ArgumentError, 'Integer to encode is negative.' if integer < 0
 
@@ -16,12 +16,15 @@ module BitcoinAddressUtils
       end
       string.reverse
     end
-    
+
     def self.decode(string)
       string = string.dup.force_encoding('BINARY')
       string.each_char.reduce(0) do |result, char|
         value = Chars.index(char)
-        raise DecodeError, "Character is not valid in base 58: #{char.inspect}." if !value
+        if !value
+          raise DecodeError,
+            "Character is not valid in base 58: #{char.inspect}."
+        end
         result * 58 + value
       end
     end

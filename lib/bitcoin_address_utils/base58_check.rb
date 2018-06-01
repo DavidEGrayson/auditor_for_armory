@@ -6,27 +6,32 @@ module BitcoinAddressUtils
     def self.decode(string)
       str = BitcoinAddressUtils::Base58Binary.decode string
       if str.size < 5
-        raise DecodeError, "Decoded string not long enough: expected at least 5 bytes, got #{str.size}."
+        raise DecodeError,
+          "Decoded string not long enough: expected at least 5 bytes, " \
+          "got #{str.size}."
       end
       if str[-4, 4] != checksum(str[0, str.size - 4])
         raise DecodeError, "Invalid checksum."
       end
-      
+
       version = str[0].ord
       payload = str[1, str.size - 5]
       [version, payload]
     end
 
-    # @param version (Intger) A number between 0 and 255 and probably from https://en.bitcoin.it/wiki/List_of_address_prefixes
+    # @param version (Intger) A number between 0 and 255 and probably from
+    #   https://en.bitcoin.it/wiki/List_of_address_prefixes
     # @praam payload (String) The data to encode.
     def self.encode(version, payload)
-      raise ArgumentError, "Invalid version: #{version.inspect}." if !(0..255).include?(version)
+      if !(0..255).include?(version)
+        raise ArgumentError, "Invalid version: #{version.inspect}."
+      end
       version_byte = version.chr('BINARY')
       payload = payload.dup.force_encoding('BINARY')
       data = version_byte + payload
       BitcoinAddressUtils::Base58Binary.encode data + checksum(data)
     end
-    
+
     def self.checksum(data)
       BitcoinAddressUtils.hash256(data)[0, 4]
     end

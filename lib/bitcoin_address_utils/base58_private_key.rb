@@ -12,12 +12,12 @@ module BitcoinAddressUtils
 
     def self.encode(private_key, metadata = {})
       if private_key.is_a?(String)
-        if private_key.bytesize != 32
-          raise "private key string should be 32 bytes, got #{private_key.size}"
-        end
         data = private_key.dup.force_encoding('BINARY')
       else
         data = ECDSA::Format::IntegerOctetString.encode(private_key, 32)
+      end
+      if data.bytesize != 32
+        raise "private key string should be 32 bytes, got #{private_key.size}"
       end
       data << encode_metadata(metadata)
       Base58Check.encode Version, data
@@ -32,7 +32,8 @@ module BitcoinAddressUtils
       end
 
       if data.size < 32
-        msg = 'Decoded private key string not long enough: expected at least 32 bytes, got %d.'
+        msg = 'Decoded private key string not long enough: ' \
+          'expected at least 32 bytes, got %d.'
         raise DecodeError, msg % data.size
       end
 
@@ -53,7 +54,8 @@ module BitcoinAddressUtils
     def self.convert_to_public_key_binary(string)
       private_key, metadata = decode_with_metadata(string)
       public_key = BitcoinAddressUtils.ecdsa_group.new_point private_key
-      ECDSA::Format::PointOctetString.encode public_key, compression: metadata[:compression]
+      ECDSA::Format::PointOctetString.encode public_key,
+        compression: metadata[:compression]
     end
 
     private
@@ -61,7 +63,8 @@ module BitcoinAddressUtils
       metadata = case string
         when "\x01" then { compression: true }
         when "" then { compression: false }
-        else raise DecodeError, "Unrecognized metadata in private key: #{string.unpack('H*').first}."
+        else raise DecodeError,
+          "Unrecognized metadata in private key: #{string.unpack('H*').first}."
         end
     end
 
@@ -69,7 +72,8 @@ module BitcoinAddressUtils
       allowed_keys = [:compression]
       bad_keys = metadata.keys - allowed_keys
       if !bad_keys.empty?
-        raise ArgumentError, "Unrecognized keys in metadata: #{bad_keys.inspect}."
+        raise ArgumentError,
+          "Unrecognized keys in metadata: #{bad_keys.inspect}."
       end
 
       if metadata[:compression]
