@@ -90,6 +90,10 @@ def key_dump(binary_data)
       puts " type: #{KeyTypes.fetch(value, value)}"
     when 2
       puts " secret_bytes: #{value.to_hex}"
+      if value.size == 32
+        puts " wif 0: #{Base58PrivateKey.encode(value)}"
+        puts " wif 1: #{Base58PrivateKey.encode(value, compression: true)}"
+      end
     when 6
       puts " encrypted_data: #{value.to_hex}"
     when 3

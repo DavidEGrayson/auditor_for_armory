@@ -2,7 +2,8 @@
 
 module BitcoinAddressUtils
   # The difference between "compressed" and "uncompressed" private keys is
-  # explained well here:  https://bitcointalk.org/index.php?topic=129652.msg1384929#msg1384929
+  # explained well here:
+  # https://bitcointalk.org/index.php?topic=129652.msg1384929#msg1384929
   #
   # This is also known as Wallet Import Format (WIF), but modern wallets
   # are not just lists of private keys, so we don't use that name.
@@ -10,19 +11,26 @@ module BitcoinAddressUtils
     Version = 0x80
 
     def self.encode(private_key, metadata = {})
-      data = ECDSA::Format::IntegerOctetString.encode(private_key, 32) +
-             encode_metadata(metadata)
+      if private_key.is_a?(String)
+        if private_key.bytesize != 32
+          raise "private key string should be 32 bytes, got #{private_key.size}"
+        end
+        data = private_key.dup.force_encoding('BINARY')
+      else
+        data = ECDSA::Format::IntegerOctetString.encode(private_key, 32)
+      end
+      data << encode_metadata(metadata)
       Base58Check.encode Version, data
     end
 
     def self.decode_with_metadata(string)
       read_version, data = Base58Check.decode string
-      
+
       if read_version != Version
         msg = 'Expected version byte of private key to be %#x, got %#x.'
         raise DecodeError, msg % [Version, read_version]
       end
-      
+
       if data.size < 32
         msg = 'Decoded private key string not long enough: expected at least 32 bytes, got %d.'
         raise DecodeError, msg % data.size
