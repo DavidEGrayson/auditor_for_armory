@@ -29,7 +29,7 @@ module BitcoinAddressUtils
       else
         raise ArgumentError, "Invalid public key: #{public_key.inspect}."
       end
-      hash = Digest::RMD160.digest Digest::SHA256.digest string
+      hash = BitcoinAddressUtils.hash160 string
       from_hash160 hash, opts
     end
 
