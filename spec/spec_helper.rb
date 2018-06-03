@@ -8,6 +8,9 @@ end
 $LOAD_PATH << 'lib'
 require 'auditor_for_armory'
 
+require 'dbtc'
+include DBTC
+
 # TODO: would be useful to put this in the library
 class String
   def hex_inspect
@@ -24,3 +27,4 @@ def hex_to_binary(str)
   end
   r
 end
+

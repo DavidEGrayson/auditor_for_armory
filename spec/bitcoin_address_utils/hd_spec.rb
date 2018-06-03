@@ -3,7 +3,7 @@
 # TODO: also try extending using the parent's public key and make sure
 # we get consistent results.  Do this every time we extend.
 
-describe BitcoinAddressUtils::HD do
+describe 'HD' do
   class TestHDNode
     attr_accessor :private_key, :chain_code
     attr_accessor :depth, :parent, :child_number
@@ -11,19 +11,18 @@ describe BitcoinAddressUtils::HD do
     def self.master(seed)
       node = new
       node.private_key, node.chain_code =
-        BitcoinAddressUtils::HD.generate_master_key(seed)
+        hd_generate_master_key(seed)
       node.depth = 0
       node.child_number = 0
       node
     end
 
     def public_key
-      @public_key ||= BitcoinAddressUtils::HD.public(private_key).first
+      @public_key ||= hd_public(private_key).first
     end
 
     def fingerprint
-      @fingerprint ||= BitcoinAddressUtils::HD.fingerprint(
-        [public_key, chain_code])
+      @fingerprint ||= hd_fingerprint([public_key, chain_code])
     end
 
     def parent_fingerprint
@@ -31,19 +30,19 @@ describe BitcoinAddressUtils::HD do
     end
 
     def encode_private
-      BitcoinAddressUtils::HD.encode([private_key, chain_code],
-        depth, parent_fingerprint, child_number)
+      hd_encode([private_key, chain_code], depth, parent_fingerprint,
+        child_number)
     end
 
     def encode_public
-      BitcoinAddressUtils::HD.encode([public_key, chain_code],
-        depth, parent_fingerprint, child_number)
+      hd_encode([public_key, chain_code], depth, parent_fingerprint,
+        child_number)
     end
 
     def child(i)
       child = self.class.new
       child.private_key, child.chain_code =
-        BitcoinAddressUtils::HD.child_private([private_key, chain_code], i)
+        hd_child_private([private_key, chain_code], i)
       child.depth = depth + 1
       child.parent = self
       child.child_number = i
