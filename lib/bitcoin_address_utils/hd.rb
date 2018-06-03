@@ -39,7 +39,7 @@ module BitcoinAddressUtils
         # hardened
         message = basic_key_data(key[0])
       else
-        messsage = basic_key_data(public(key)[0])
+        message = basic_key_data(public(key)[0])
       end
       message << ECDSA::Format::IntegerOctetString.encode(i, 4)
       hmac = HMAC.sha512(key[1], message)
