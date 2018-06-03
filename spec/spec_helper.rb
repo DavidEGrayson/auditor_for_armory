@@ -6,8 +6,7 @@ if ENV['COVERAGE'] == 'Y'
 end
 
 $LOAD_PATH << 'lib'
-require 'auditor_for_armory'
-
+require 'bitcoin_address_utils'
 require 'dbtc'
 include DBTC
 
