@@ -2,7 +2,7 @@
 describe BitcoinAddressUtils::HD do
   class TestHDNode
     attr_accessor :private_key, :chain_code
-    attr_accessor :depth, :parent, :child_number, :fingerprint
+    attr_accessor :depth, :parent, :child_number
 
     def self.master(seed)
       node = new
@@ -18,11 +18,12 @@ describe BitcoinAddressUtils::HD do
     end
 
     def fingerprint
-      BitcoinAddressUtils::HD.fingerprint([node.private_key, node.chain_code])
+      @fingerprint ||= BitcoinAddressUtils::HD.fingerprint(
+        [public_key, chain_code])
     end
 
     def parent_fingerprint
-      @parent ? @parent.fingerprint : 0
+      @parent ? @parent.fingerprint : "\x00\x00\x00\x00"
     end
 
     def encode_private
@@ -34,6 +35,16 @@ describe BitcoinAddressUtils::HD do
       BitcoinAddressUtils::HD.encode([public_key, chain_code],
         depth, parent_fingerprint, child_number)
     end
+
+    def child(i)
+      child = self.class.new
+      child.private_key, child.chain_code =
+        BitcoinAddressUtils::HD.child_private([private_key, chain_code], i)
+      child.depth = depth + 1
+      child.parent = self
+      child.child_number = i
+      child
+    end
   end
 
   specify 'test vector 1' do
@@ -41,13 +52,17 @@ describe BitcoinAddressUtils::HD do
     master = TestHDNode.master(seed)
     expect(master.encode_private).to eq 'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi'
     expect(master.encode_public).to eq 'xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8'
+
+    # TODO: also try extending using the parent's public key and make sure
+    # we get consistent results.  Do this every time we extend.
+
+    wallet0 = master.child(0x80000000)
+    expect(wallet0.encode_public).to eq 'xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw'
+    expect(wallet0.encode_private).to eq 'xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7'
   end
 end
 
 __END__
-Chain m/0H
-ext pub: xpub68Gmy5EdvgibQVfPdqkBBCHxA5htiqg55crXYuXoQRKfDBFA1WEjWgP6LHhwBZeNK1VTsfTFUHCdrfp1bgwQ9xv5ski8PX9rL2dZXvgGDnw
-ext prv: xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7
 Chain m/0H/1
 ext pub: xpub6ASuArnXKPbfEwhqN6e3mwBcDTgzisQN1wXN9BJcM47sSikHjJf3UFHKkNAWbWMiGj7Wf5uMash7SyYq527Hqck2AxYysAA7xmALppuCkwQ
 ext prv: xprv9wTYmMFdV23N2TdNG573QoEsfRrWKQgWeibmLntzniatZvR9BmLnvSxqu53Kw1UmYPxLgboyZQaXwTCg8MSY3H2EU4pWcQDnRnrVA1xe8fs

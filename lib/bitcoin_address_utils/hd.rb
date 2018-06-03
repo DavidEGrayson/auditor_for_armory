@@ -42,7 +42,7 @@ module BitcoinAddressUtils
         messsage = basic_key_data(public(key)[0])
       end
       message << ECDSA::Format::IntegerOctetString.encode(i, 4)
-      hmac = HMAC.sha512(chain_code, message)
+      hmac = HMAC.sha512(key[1], message)
       left, chain_code = hmac[0...32], hmac[32...64]
       pk0 = BinaryInteger.decode(left)
       private_key = (pk0 + key[0]) % BitcoinAddressUtils.ecdsa_group.order
@@ -68,13 +68,13 @@ module BitcoinAddressUtils
 
     def self.id(key)
       key = self.public(key)
-      key_str = ECDSA::Format::PointOctetString.encode(public_key,
+      key_str = ECDSA::Format::PointOctetString.encode(key[0],
         compression: true)
       BitcoinAddressUtils.hash160 key_str
     end
 
     def self.fingerprint(key)
-      id(key) & 0xFFFFFFFF
+      id(key)[0, 4]
     end
 
     def self.encode(key, depth, parent_fingerprint, child_number)
@@ -84,7 +84,7 @@ module BitcoinAddressUtils
         version = 0x0488B21E  # mainnet public (xpub)
       end
       data = (depth & 0xFF).chr('BINARY')
-      data << ECDSA::Format::IntegerOctetString.encode(parent_fingerprint, 4)
+      data << parent_fingerprint
       data << ECDSA::Format::IntegerOctetString.encode(child_number, 4)
       data << key[1]  # chain code
       data << basic_key_data(key[0])
