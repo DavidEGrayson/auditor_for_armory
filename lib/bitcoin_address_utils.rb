@@ -1,7 +1,6 @@
 require 'digest'
 require 'ecdsa'
 
-require_relative 'bitcoin_address_utils/binary_integer'
 require_relative 'bitcoin_address_utils/base58_integer'
 require_relative 'bitcoin_address_utils/base58_binary'
 require_relative 'bitcoin_address_utils/base58_check'

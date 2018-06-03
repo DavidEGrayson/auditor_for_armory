@@ -19,7 +19,7 @@ module DBTC
   def hd_generate_master_key(seed)
     hmac = BitcoinAddressUtils::HMAC.sha512("Bitcoin seed", seed)
     left, chain_code = hmac[0...32], hmac[32...64]
-    private_key = BitcoinAddressUtils::BinaryInteger.decode(left)
+    private_key = DBTC.int_decode(left)
     if private_key >= BitcoinAddressUtils.ecdsa_group.order || private_key == 0
       return nil  # Invalid key, try another seed
     end
@@ -44,7 +44,7 @@ module DBTC
     message << ECDSA::Format::IntegerOctetString.encode(i, 4)
     hmac = BitcoinAddressUtils::HMAC.sha512(key[1], message)
     left, chain_code = hmac[0...32], hmac[32...64]
-    pk0 = BitcoinAddressUtils::BinaryInteger.decode(left)
+    pk0 = DBTC.int_decode(left)
     private_key = (pk0 + key[0]) % BitcoinAddressUtils.ecdsa_group.order
     if pk0 >= BitcoinAddressUtils.ecdsa_group.order || private_key == 0
       return nil  # Invalid key, try next i value
