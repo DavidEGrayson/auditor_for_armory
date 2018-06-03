@@ -1,5 +1,3 @@
-require_relative 'decode_error'
-
 module BitcoinAddressUtils
   # This module provides methods for converting between unsigned integers
   # and base 58 strings.

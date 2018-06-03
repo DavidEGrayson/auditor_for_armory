@@ -1,5 +1,3 @@
-require_relative 'decode_error'
-
 # https://en.bitcoin.it/wiki/Base58Check_encoding
 module BitcoinAddressUtils
   module Base58Check

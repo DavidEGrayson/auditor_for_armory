@@ -26,19 +26,18 @@ describe BitcoinAddressUtils::Base58Check do
     end
 
     it 'raises an error if you give it invalid characters' do
-      expect { described_class.decode('-') }.to raise_error BitcoinAddressUtils::DecodeError,
+      expect { described_class.decode('-') }.to raise_error DecodeError,
         'Character is not valid in base 58: "-".'
     end
 
     it 'raises an error if the checksum is wrong' do
       expect { described_class.decode('16UwLL9Risc3QfPqBUvKofHmBQ7wMtjzz') }.to raise_error(
-        BitcoinAddressUtils::DecodeError, 'Invalid checksum.')
+        DecodeError, 'Invalid checksum.')
     end
 
     it 'raises an error if there is not enough data' do
-      expect { described_class.decode('12') }.to raise_error(
-        BitcoinAddressUtils::DecodeError, 'Decoded string not long enough: expected at least 5 bytes, got 2.'
-      )
+      expect { described_class.decode('12') }.to raise_error(DecodeError,
+        'Decoded string not long enough: expected at least 5 bytes, got 2.')
     end
   end
 
