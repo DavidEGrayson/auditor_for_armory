@@ -39,7 +39,7 @@ module BitcoinAddressUtils
     end
 
     def self.checksum(data)
-      BitcoinAddressUtils.hash256(data)[0, 4]
+      DBTC.hash256(data)[0, 4]
     end
   end
 end

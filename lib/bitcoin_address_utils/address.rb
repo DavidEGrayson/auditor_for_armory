@@ -29,8 +29,7 @@ module BitcoinAddressUtils
       else
         raise ArgumentError, "Invalid public key: #{public_key.inspect}."
       end
-      hash = BitcoinAddressUtils.hash160 string
-      from_hash160 hash, opts
+      from_hash160 DBTC.hash160(string), opts
     end
 
     def self.from_hash160(hash160_binary, opts = {})
