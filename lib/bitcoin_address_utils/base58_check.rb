@@ -13,9 +13,13 @@ module BitcoinAddressUtils
       if str[-4, 4] != checksum(str[0, str.size - 4])
         raise DecodeError, "Invalid checksum."
       end
-
-      version = str[0].ord
-      payload = str[1, str.size - 5]
+      if str.getbyte(0) == 4
+        version = ECDSA::Format::IntegerOctetString.decode str[0, 4]
+        payload = str[4, str.size - 8]
+      else
+        version = str.getbyte(0)
+        payload = str[1, str.size - 5]
+      end
       [version, payload]
     end
 
@@ -23,12 +27,14 @@ module BitcoinAddressUtils
     #   https://en.bitcoin.it/wiki/List_of_address_prefixes
     # @praam payload (String) The data to encode.
     def self.encode(version, payload)
-      if !(0..255).include?(version)
+      if version >= 0 && version < 256 && version != 4
+        vstr = version.chr('BINARY')
+      elsif version >= 0x04000000 && version < 0x05000000
+        vstr = ECDSA::Format::IntegerOctetString.encode(version, 4)
+      else
         raise ArgumentError, "Invalid version: #{version.inspect}."
       end
-      version_byte = version.chr('BINARY')
-      payload = payload.dup.force_encoding('BINARY')
-      data = version_byte + payload
+      data = vstr + payload
       BitcoinAddressUtils::Base58Binary.encode data + checksum(data)
     end
 
