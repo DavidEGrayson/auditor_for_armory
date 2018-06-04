@@ -14,8 +14,7 @@ module DBTC
   end
 
   def public_key_to_address(public_key, compression = true)
-    string = ECDSA::Format::PointOctetString.encode(public_key,
-      compression: compression)
+    string = ecdsa_public_encode(public_key, compression)
     encoded_public_key_to_address(string)
   end
 

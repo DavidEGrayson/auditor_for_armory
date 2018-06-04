@@ -12,7 +12,7 @@ module DBTC
     if key.is_a?(Integer)
       "\x00" + ECDSA::Format::IntegerOctetString.encode(key, 32)
     else
-      ECDSA::Format::PointOctetString.encode(key, compression: true)
+      ecdsa_public_encode(key)
     end
   end
 
