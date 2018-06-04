@@ -1,5 +1,15 @@
+# encoding: ASCII-8BIT
+
 module DBTC
-  def seed_to_mnemonic(seed)
+  def mnemonic_to_seed(mnemonic, passphrase = "")
+    password = mnemonic
+    salt = "mnemonic" + passphrase
+    iteration_count = 2048
+    hmac_sha512()
+    # TODO: PBKDF2 with the parameters above
+  end
+
+  def entropy_to_mnemonic(seed)
     if ![16, 20, 24, 28, 32].include?(seed.size)
       raise ArgumentError, "Seed length invalid: #{seed.size}."
     end

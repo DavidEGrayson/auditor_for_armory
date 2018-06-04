@@ -4,9 +4,18 @@ require_relative 'spec_helper'
 
 describe 'mnemonic_seed' do
   it 'passes the TREZOR test vectors' do
-    MnemonicTestVectors.each do |seed, word_string, seed2, xprv|
-      expect(seed_to_mnemonic(hex_to_binary(seed))).to eq word_string
-      # TODO
+    MnemonicTestVectors.each do |vector|
+      entropy, expected_mnemonic, expected_seed, expected_xprv = vector
+
+      mnemonic = entropy_to_mnemonic(hex_to_binary(entropy))
+      expect(mnemonic).to eq expected_mnemonic
+
+      seed = mnemonic_to_seed(mnemonic)
+      expect(seed).to eq expected_seed
+
+      private_key, chain_code = DBTC.hd_generate_master_key(seed)
+      xprv = hd_encode(private_key, chain_code, 0, 0, 0)
+      expect(xprv).to eq expected_xprv
     end
   end
 end
