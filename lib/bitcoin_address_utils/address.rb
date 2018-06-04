@@ -8,7 +8,7 @@ module BitcoinAddressUtils
   # https://en.bitcoin.it/wiki/Technical_background_of_Bitcoin_addresses
   module Address
     def self.from_base58_private_key(string, opts = {})
-      public_key_binary = Base58PrivateKey.convert_to_public_key_binary(string)
+      public_key_binary = DBTC.encoded_private_key_to_encoded_public_key(string)
       from_public_key public_key_binary, opts
     end
 

@@ -3,6 +3,7 @@ require 'ecdsa'
 require_relative 'dbtc/hash'
 require_relative 'dbtc/int'
 require_relative 'dbtc/base58'
+require_relative 'dbtc/private_key'
 require_relative 'dbtc/hd'
 
 module DBTC
