@@ -1,5 +1,5 @@
 # encoding: ASCII-8BIT
-require 'spec_helper'
+require_relative 'spec_helper'
 
 describe 'address' do
   describe 'encoded_private_key_to_address' do

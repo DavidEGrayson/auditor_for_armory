@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
-require 'spec_helper'
+
+require_relative 'spec_helper'
 
 describe 'base58 integer' do
   describe 'encode' do
@@ -34,7 +35,7 @@ describe 'base58 integer' do
     end
 
     it 'raises an error if you give it invalid characters' do
-      expect { base58_int_decode('-') }.to raise_error DecodeError,
+      expect { base58_int_decode('-') }.to raise_error DBTC::DecodeError,
         'Character is not valid in base 58: "-".'
     end
   end

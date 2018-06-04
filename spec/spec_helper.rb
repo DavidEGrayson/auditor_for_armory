@@ -7,7 +7,10 @@ end
 
 $LOAD_PATH << 'lib'
 require 'dbtc'
-include DBTC
+
+RSpec.configure do |c|
+  c.include DBTC
+end
 
 # TODO: would be useful to put this in the library
 class String

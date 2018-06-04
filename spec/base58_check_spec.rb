@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
-require 'spec_helper'
+
+require_relative 'spec_helper'
 
 describe 'base58_check' do
   cases = {
@@ -26,17 +27,17 @@ describe 'base58_check' do
     end
 
     it 'raises an error if you give it invalid characters' do
-      expect { base58_check_decode('-') }.to raise_error DecodeError,
+      expect { base58_check_decode('-') }.to raise_error DBTC::DecodeError,
         'Character is not valid in base 58: "-".'
     end
 
     it 'raises an error if the checksum is wrong' do
       expect { base58_check_decode('16UwLL9Risc3QfPqBUvKofHmBQ7wMtjzz') }.to raise_error(
-        DecodeError, 'Invalid checksum.')
+        DBTC::DecodeError, 'Invalid checksum.')
     end
 
     it 'raises an error if there is not enough data' do
-      expect { base58_check_decode('12') }.to raise_error(DecodeError,
+      expect { base58_check_decode('12') }.to raise_error(DBTC::DecodeError,
         'Decoded string not long enough: expected at least 5 bytes, got 2.')
     end
   end

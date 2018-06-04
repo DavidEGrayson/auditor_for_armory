@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
-require 'spec_helper'
+
+require_relative 'spec_helper'
 
 describe 'binary integer' do
   describe 'int_encode' do

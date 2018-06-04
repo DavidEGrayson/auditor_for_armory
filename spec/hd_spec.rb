@@ -1,4 +1,6 @@
-require_relative '../spec_helper'
+# encoding: ASCII-8BIT
+
+require_relative 'spec_helper'
 
 # https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#test-vectors
 
@@ -13,18 +15,18 @@ describe 'HD' do
     def self.master(seed)
       node = new
       node.private_key, node.chain_code =
-        hd_generate_master_key(seed)
+        DBTC.hd_generate_master_key(seed)
       node.depth = 0
       node.child_number = 0
       node
     end
 
     def public_key
-      @public_key ||= hd_public(private_key).first
+      @public_key ||= DBTC.hd_public(private_key).first
     end
 
     def fingerprint
-      @fingerprint ||= hd_fingerprint([public_key, chain_code])
+      @fingerprint ||= DBTC.hd_fingerprint([public_key, chain_code])
     end
 
     def parent_fingerprint
@@ -32,19 +34,19 @@ describe 'HD' do
     end
 
     def encode_private
-      hd_encode([private_key, chain_code], depth, parent_fingerprint,
+      DBTC.hd_encode([private_key, chain_code], depth, parent_fingerprint,
         child_number)
     end
 
     def encode_public
-      hd_encode([public_key, chain_code], depth, parent_fingerprint,
+      DBTC.hd_encode([public_key, chain_code], depth, parent_fingerprint,
         child_number)
     end
 
     def child(i)
       child = self.class.new
       child.private_key, child.chain_code =
-        hd_child_private([private_key, chain_code], i)
+        DBTC.hd_child_private([private_key, chain_code], i)
       child.depth = depth + 1
       child.parent = self
       child.child_number = i

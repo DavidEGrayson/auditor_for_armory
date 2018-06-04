@@ -1,5 +1,6 @@
 # encoding: ASCII-8BIT
-require 'spec_helper'
+
+require_relative 'spec_helper'
 
 # The test cases here came from Blowfeld on bitcointalk.org:
 #   https://bitcointalk.org/index.php?topic=129652.msg1697154#msg1697154
@@ -44,20 +45,20 @@ describe 'private_key' do
       data = ("\x22" * 32) + "\x44\x55"
       b58c = base58_check_encode(0x80, data)
       expect { private_key_decode(b58c) }.to raise_error(
-        DecodeError, "Private key metadata unrecognized.")
+        DBTC::DecodeError, "Private key metadata unrecognized.")
     end
 
     it 'complains if the version is wrong' do
       data = ("\x22" * 32) + "\x44\x55"
       b58c = base58_check_encode(0x83, data)
       expect { private_key_decode(b58c) }.to raise_error(
-        DecodeError, "Private key has wrong version byte.")
+        DBTC::DecodeError, "Private key has wrong version byte.")
     end
 
     it 'complains if the decoded string does not have enough data' do
       b58c = base58_check_encode(0x80, "hi")
       expect { private_key_decode(b58c) }.to raise_error(
-        DecodeError, 'Private key has wrong size.')
+        DBTC::DecodeError, 'Private key has wrong size.')
     end
   end
 end
