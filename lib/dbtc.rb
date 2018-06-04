@@ -5,6 +5,7 @@ require_relative 'dbtc/base58'
 require_relative 'dbtc/private_key'
 require_relative 'dbtc/address'
 require_relative 'dbtc/hd'
+require_relative 'dbtc/mnemonic'
 
 module DBTC
   extend self
