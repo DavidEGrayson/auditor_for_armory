@@ -8,8 +8,8 @@
 # https://developers.google.com/protocol-buffers/docs/encoding#simple
 
 require 'date'
-require 'bitcoin_address_utils'
-include BitcoinAddressUtils
+require 'dbtc'
+include DBTC
 
 class String
   def to_hex
@@ -113,14 +113,14 @@ def key_dump(binary_data)
     when 2
       puts "  secret_bytes: #{value.to_hex}"
       if value.size == 32
-        puts "  wif 0: #{Base58PrivateKey.encode(value)}"
-        puts "  wif 1: #{Base58PrivateKey.encode(value, compression: true)}"
+        puts "  wif 0: #{private_key_encode(value)}"
+        puts "  wif 1: #{private_key_encode(value, false)}"
       end
     when 6
       puts "  encrypted_data: #{value.to_hex}"
     when 3
       puts "  public_key: #{value.to_hex}"
-      puts "  address: #{Address.from_public_key(value)}"
+      puts "  address: #{encoded_public_key_to_address(value)}"
     when 4
       puts "  label: #{value.inspect}"
     when 5

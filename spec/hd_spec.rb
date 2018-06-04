@@ -4,11 +4,8 @@ require_relative 'spec_helper'
 
 # https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#test-vectors
 
-# TODO: also try extending using the parent's public key and make sure
-# we get consistent results.  Do this every time we extend.
-
 describe 'HD' do
-  class TestHDNode
+  class TestHDNode  # TODO: put something like this in the library
     attr_accessor :private_key
     attr_writer :public_key
     attr_accessor :chain_code
