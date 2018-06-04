@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+
+require 'dbtc'
+include DBTC
+
+# TODO: get this in the library
+class String
+  def to_hex
+    each_byte.map { |b| "%02x" % b }.join
+  end
+end
+
+def dump_info(arg)
+  arg = arg.dup.force_encoding('BINARY')
+  puts "input: #{arg}"
+  version, payload = base58_check_decode(arg)
+  puts "version: 0x%x" % version
+  puts "payload: 0x%s" % payload.to_hex
+  # TODO: more info based on the version number
+  puts
+end
+
+if ARGV.empty?
+  args = ARGF.read.lines.map(&:chomp)
+else
+  args = ARGV
+end
+
+args.each do |arg|
+  dump_info(arg)
+end
