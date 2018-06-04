@@ -1,7 +1,7 @@
 # encoding: ASCII-8BIT
 require 'spec_helper'
 
-describe BitcoinAddressUtils::Base58Binary do
+describe 'base58 binary' do
   cases = {
     "\x03" => '4',
     "\x00\x08" => '19',
@@ -12,7 +12,7 @@ describe BitcoinAddressUtils::Base58Binary do
   describe 'encode' do
     cases.each do |binary, base58|
       it "converts #{binary.inspect} to #{base58}" do
-        expect(described_class.encode(binary)).to eq base58
+        expect(base58_encode(binary)).to eq base58
       end
     end
   end
@@ -20,12 +20,12 @@ describe BitcoinAddressUtils::Base58Binary do
   describe 'decode' do
     cases.each do |binary, base58|
       it "converts #{base58} to #{binary.inspect}" do
-        expect(described_class.decode(base58)).to eq binary
+        expect(base58_decode(base58)).to eq binary
       end
     end
 
     it 'raises an error if you give it invalid characters' do
-      expect { described_class.decode('-') }.to raise_error DecodeError,
+      expect { base58_decode('-') }.to raise_error DecodeError,
         'Character is not valid in base 58: "-".'
     end
   end

@@ -42,7 +42,7 @@ module BitcoinAddressUtils
       end
 
       version = opts.fetch(:version, 0)
-      BitcoinAddressUtils::Base58Check.encode version, hash160_binary
+      base58_check_encode version, hash160_binary
     end
 
     def self.from_hash160_hex(hash160_hex, opts = {})

@@ -17,7 +17,7 @@ describe BitcoinAddressUtils::Base58PrivateKey do
     '5JRks4Vf268r9cuCKiod2iFz1VcSpawX5m6T3PKSA1v7cRqfZZD'
   end
 
-  describe '.encode' do
+  describe 'encode' do
     it 'works with compression turned on' do
       expect(described_class.encode(private_key, compression: true)).to eq base58_private_key_compressed
     end
@@ -33,7 +33,7 @@ describe BitcoinAddressUtils::Base58PrivateKey do
     end
   end
 
-  describe '.decode_with_metadata' do
+  describe 'decode_with_metadata' do
     it 'can decode a private key with compression metadata' do
       private_key, metadata = described_class.decode_with_metadata base58_private_key_compressed
       expect(private_key).to eq private_key
@@ -48,20 +48,20 @@ describe BitcoinAddressUtils::Base58PrivateKey do
 
     it 'complains if the metadata is not recognized' do
       data = ("\x22" * 32) + "\x44\x55"
-      b58c = BitcoinAddressUtils::Base58Check.encode(0x80, data)
+      b58c = base58_check_encode(0x80, data)
       expect { described_class.decode_with_metadata b58c }.to raise_error(
         DecodeError, "Unrecognized metadata in private key: 4455.")
     end
 
     it 'complains if the version is wrong' do
       data = ("\x22" * 32) + "\x44\x55"
-      b58c = BitcoinAddressUtils::Base58Check.encode(0x83, data)
+      b58c = base58_check_encode(0x83, data)
       expect { described_class.decode_with_metadata b58c }.to raise_error(
         DecodeError, "Expected version byte of private key to be 0x80, got 0x83.")
     end
 
-    it 'complains if hte decoded string does not have enough data' do
-      b58c = BitcoinAddressUtils::Base58Check.encode(0x80, "hi")
+    it 'complains if the decoded string does not have enough data' do
+      b58c = base58_check_encode(0x80, "hi")
       expect { described_class.decode(b58c) }.to raise_error(DecodeError,
         'Decoded private key string not long enough: expected at least 32 bytes, got 2.'
       )

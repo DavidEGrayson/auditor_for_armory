@@ -20,11 +20,11 @@ module BitcoinAddressUtils
         raise "private key string should be 32 bytes, got #{private_key.size}"
       end
       data << encode_metadata(metadata)
-      Base58Check.encode Version, data
+      base58_check_encode Version, data
     end
 
     def self.decode_with_metadata(string)
-      read_version, data = Base58Check.decode string
+      read_version, data = DBTC.base58_check_decode string
 
       if read_version != Version
         msg = 'Expected version byte of private key to be %#x, got %#x.'

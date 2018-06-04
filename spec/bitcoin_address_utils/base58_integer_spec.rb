@@ -1,7 +1,7 @@
 # encoding: ASCII-8BIT
 require 'spec_helper'
 
-describe BitcoinAddressUtils::Base58Integer do
+describe 'base58 integer' do
   describe 'encode' do
     cases = {
       0 => '',
@@ -13,7 +13,7 @@ describe BitcoinAddressUtils::Base58Integer do
 
     cases.each do |integer, string|
       it "converts %#x properly" % integer do
-        expect(described_class.encode(integer)).to eq string
+        expect(base58_int_encode(integer)).to eq string
       end
     end
   end
@@ -29,21 +29,13 @@ describe BitcoinAddressUtils::Base58Integer do
 
     cases.each do |string, integer|
       it "converts #{string.inspect} properly" do
-        expect(described_class.decode(string)).to eq integer
+        expect(base58_int_decode(string)).to eq integer
       end
     end
 
     it 'raises an error if you give it invalid characters' do
-      expect { described_class.decode('-') }.to raise_error DecodeError,
+      expect { base58_int_decode('-') }.to raise_error DecodeError,
         'Character is not valid in base 58: "-".'
-    end
-  end
-
-  describe 'Chars' do
-    it 'are sorted' do
-      # This could be very useful in some cases.  For example, if you have a sorted list of
-      # addresses and you want to look for all addresses in a certain range of hash160 values.
-      expect(described_class::Chars).to eq described_class::Chars.sort
     end
   end
 end

@@ -1,8 +1,9 @@
 require 'digest'
 require 'ecdsa'
-require_relative 'dbtc/hd'
-require_relative 'dbtc/int'
 require_relative 'dbtc/hash'
+require_relative 'dbtc/int'
+require_relative 'dbtc/base58'
+require_relative 'dbtc/hd'
 
 module DBTC
   extend self

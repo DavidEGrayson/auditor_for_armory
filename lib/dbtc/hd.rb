@@ -88,6 +88,6 @@ module DBTC
     data << ECDSA::Format::IntegerOctetString.encode(child_number, 4)
     data << key[1]  # chain code
     data << hd_basic_key_data(key[0])
-    BitcoinAddressUtils::Base58Check.encode(version, data)
+    base58_check_encode(version, data)
   end
 end
