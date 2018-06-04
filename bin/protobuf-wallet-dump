@@ -11,6 +11,7 @@ require 'date'
 require 'dbtc'
 include DBTC
 
+# TODO: get this in the library
 class String
   def to_hex
     each_byte.map { |b| "%02x" % b }.join
@@ -116,6 +117,9 @@ def key_dump(binary_data)
         puts "  wif 0: #{private_key_encode(value)}"
         puts "  wif 1: #{private_key_encode(value, false)}"
       end
+      if value.ascii_only?
+        puts "  secret_bytes_ascii: #{value.inspect}"
+      end
     when 6
       puts "  encrypted_data: #{value.to_hex}"
     when 3
@@ -127,6 +131,8 @@ def key_dump(binary_data)
       puts "  creation_timestamp: #{value} = #{Time.at(value/1000)}"
     when 7
       deterministic_key_dump(value)
+    when 8
+      puts "  deterministic seed: #{value.to_hex}"
     else
       print_unimplemented_field(field_number, value)
     end
