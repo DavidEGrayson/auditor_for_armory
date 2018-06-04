@@ -1,13 +1,13 @@
+# encoding: ASCII-8BIT
+
 module DBTC
-  # TODO: add optional length argument
-  def int_encode(integer)
-    raise ArgumentError, 'Integer to encode is negative.' if integer < 0
-    string = ''.force_encoding('BINARY')
+  def int_encode(integer, min_length = 0)
+    string = ""
     while integer > 0
       integer, remainder = integer.divmod 256
-      string << remainder.chr
+      string << remainder
     end
-    string.reverse
+    string.reverse.rjust(min_length, "\x00")
   end
 
   def int_decode(string)

@@ -56,7 +56,7 @@ module DBTC
       raise DecodeError, "Invalid checksum."
     end
     if str.getbyte(0) == 4
-      version = ECDSA::Format::IntegerOctetString.decode str[0, 4]
+      version = int_decode str[0, 4]
       payload = str[4, str.size - 8]
     else
       version = str.getbyte(0)
@@ -69,7 +69,7 @@ module DBTC
     if version >= 0 && version < 256 && version != 4
       vstr = version.chr('BINARY')
     elsif version >= 0x04000000 && version < 0x05000000
-      vstr = ECDSA::Format::IntegerOctetString.encode(version, 4)
+      vstr = int_encode(version, 4)
     else
       raise ArgumentError, "Invalid version: #{version.inspect}."
     end

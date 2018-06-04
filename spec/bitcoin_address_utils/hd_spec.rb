@@ -1,3 +1,5 @@
+require_relative '../spec_helper'
+
 # https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#test-vectors
 
 # TODO: also try extending using the parent's public key and make sure

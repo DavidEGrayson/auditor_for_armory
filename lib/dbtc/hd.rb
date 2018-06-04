@@ -8,9 +8,9 @@
 # and the second element being the 32-byte binary chain code string.
 
 module DBTC
-  private def hd_basic_key_data(key)
+  def hd_basic_key_data(key)
     if key.is_a?(Integer)
-      "\x00" + ECDSA::Format::IntegerOctetString.encode(key, 32)
+      "\x00" + int_encode(key, 32)
     else
       ecdsa_public_encode(key)
     end
@@ -41,7 +41,7 @@ module DBTC
     else
       message = hd_basic_key_data(hd_public(key)[0])
     end
-    message << ECDSA::Format::IntegerOctetString.encode(i, 4)
+    message << int_encode(i, 4)
     hmac = hmac_sha512(key[1], message)
     left, chain_code = hmac[0...32], hmac[32...64]
     pk0 = DBTC.int_decode(left)
@@ -84,7 +84,7 @@ module DBTC
     end
     data = (depth & 0xFF).chr('BINARY')
     data << parent_fingerprint
-    data << ECDSA::Format::IntegerOctetString.encode(child_number, 4)
+    data << int_encode(child_number, 4)
     data << key[1]  # chain code
     data << hd_basic_key_data(key[0])
     base58_check_encode(version, data)

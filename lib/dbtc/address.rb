@@ -20,7 +20,7 @@ module DBTC
 
   def encoded_public_key_to_address(string)
     version = 0
-    hash = DBTC.hash160(string)
+    hash = hash160(string)
     base58_check_encode version, hash
   end
 end
