@@ -27,11 +27,11 @@ describe 'HD' do
     end
 
     def public_key
-      @public_key ||= DBTC.hd_public(private_key).first
+      @public_key ||= DBTC.ecdsa_private_to_public(private_key)
     end
 
     def fingerprint
-      @fingerprint ||= DBTC.hd_fingerprint([public_key, chain_code])
+      @fingerprint ||= DBTC.hd_fingerprint(public_key)
     end
 
     def parent_fingerprint
@@ -39,12 +39,12 @@ describe 'HD' do
     end
 
     def encode_private
-      DBTC.hd_encode([private_key, chain_code], depth, parent_fingerprint,
+      DBTC.hd_encode(private_key, chain_code, depth, parent_fingerprint,
         child_number)
     end
 
     def encode_public
-      DBTC.hd_encode([public_key, chain_code], depth, parent_fingerprint,
+      DBTC.hd_encode(public_key, chain_code, depth, parent_fingerprint,
         child_number)
     end
 
@@ -52,10 +52,10 @@ describe 'HD' do
       child = self.class.new
       if private_key
         child.private_key, child.chain_code =
-          DBTC.hd_child_private([private_key, chain_code], i)
+          DBTC.hd_child_private(private_key, chain_code, i)
       else
         child.public_key, child.chain_code =
-          DBTC.hd_child_public([public_key, chain_code], i)
+          DBTC.hd_child_public(public_key, chain_code, i)
       end
       child.depth = depth + 1
       child.parent = self
