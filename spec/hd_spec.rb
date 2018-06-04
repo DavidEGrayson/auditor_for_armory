@@ -9,8 +9,13 @@ require_relative 'spec_helper'
 
 describe 'HD' do
   class TestHDNode
-    attr_accessor :private_key, :chain_code
-    attr_accessor :depth, :parent, :child_number
+    attr_accessor :private_key
+    attr_writer :public_key
+    attr_accessor :chain_code
+    attr_accessor :depth
+    attr_accessor :parent
+    attr_accessor :child_number
+    attr_writer :fingerprint
 
     def self.master(seed)
       node = new
@@ -45,12 +50,37 @@ describe 'HD' do
 
     def child(i)
       child = self.class.new
-      child.private_key, child.chain_code =
-        DBTC.hd_child_private([private_key, chain_code], i)
+      if private_key
+        child.private_key, child.chain_code =
+          DBTC.hd_child_private([private_key, chain_code], i)
+      else
+        child.public_key, child.chain_code =
+          DBTC.hd_child_public([public_key, chain_code], i)
+      end
       child.depth = depth + 1
       child.parent = self
       child.child_number = i
       child
+    end
+
+    def discard_private_key
+      node = self.class.new
+      node.public_key = public_key
+      node.chain_code = chain_code
+      node.depth = depth
+      node.parent = parent
+      node
+    end
+  end
+
+  def check_neutered_derivations(node)
+    while true
+      break if !node.parent
+      if node.parent.private_key && node.child_number < 0x80000000
+        neutered = node.parent.discard_private_key.child(node.child_number)
+        expect(neutered.public_key).to eq node.public_key
+      end
+      node = node.parent
     end
   end
 
@@ -80,6 +110,8 @@ describe 'HD' do
     node6 = node5.child(1000000000)    # m/0H/1/2H/2/1000000000
     expect(node6.encode_public).to eq  'xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy'
     expect(node6.encode_private).to eq 'xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76'
+
+    check_neutered_derivations(node6)
   end
 
   specify 'test vector 2' do
@@ -109,6 +141,8 @@ describe 'HD' do
     node6 = node5.child(2)              # m/0/2147483647H/1/2147483646H/2
     expect(node6.encode_public).to eq   'xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt'
     expect(node6.encode_private).to eq  'xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j'
+
+    check_neutered_derivations(node6)
   end
 
   specify 'test vector 3' do
@@ -122,5 +156,7 @@ describe 'HD' do
     node2 = node.child(0x80000000)     # m/0H
     expect(node2.encode_public).to eq  'xpub68NZiKmJWnxxS6aaHmn81bvJeTESw724CRDs6HbuccFQN9Ku14VQrADWgqbhhTHBaohPX4CjNLf9fq9MYo6oDaPPLPxSb7gwQN3ih19Zm4Y'
     expect(node2.encode_private).to eq 'xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L'
+
+    check_neutered_derivations(node2)
   end
 end

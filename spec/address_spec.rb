@@ -1,4 +1,5 @@
 # encoding: ASCII-8BIT
+
 require_relative 'spec_helper'
 
 describe 'address' do

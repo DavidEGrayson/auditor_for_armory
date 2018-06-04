@@ -2,12 +2,11 @@
 
 # BIP32 - Hierarchical Deterministic Wallets
 # https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
-#
-# Operates on extended keys, which are a two-element array, with the
-# first element be a private key (integer) or public key (ECDSA point),
-# and the second element being the 32-byte binary chain code string.
 
 module DBTC
+  # TODO: get rid of these key array arguments, split into two arguments
+
+  # TODO: try to get rid of this
   def hd_basic_key_data(key)
     if key.is_a?(Integer)
       "\x00" + int_encode(key, 32)
@@ -53,7 +52,19 @@ module DBTC
   end
 
   def hd_child_public(key, i)
-    raise NotImplementedError
+    if i >= (1 << 31)
+      raise "Cannot derive hardened HD keys without a private key."
+    end
+    message = ecdsa_public_encode(key[0])
+    message << int_encode(i, 4)
+    hmac = hmac_sha512(key[1], message)
+    left, chain_code = hmac[0...32], hmac[32...64]
+    pk0 = DBTC.int_decode(left)
+    public_key = ecdsa_private_to_public(pk0) + key[0]
+    if pk0 >= ecdsa_group_order || public_key.infinity?
+      return nil  # Invalid key, try next i value
+    end
+    [public_key, chain_code]
   end
 
   def hd_public(key)
