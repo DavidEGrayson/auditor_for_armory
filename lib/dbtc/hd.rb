@@ -20,7 +20,7 @@ module DBTC
     hmac = hmac_sha512("Bitcoin seed", seed)
     left, chain_code = hmac[0...32], hmac[32...64]
     private_key = int_decode(left)
-    if private_key >= BitcoinAddressUtils.ecdsa_group.order || private_key == 0
+    if private_key >= ecdsa_group_order || private_key == 0
       return nil  # Invalid key, try another seed
     end
     [private_key, chain_code]
@@ -45,8 +45,8 @@ module DBTC
     hmac = hmac_sha512(key[1], message)
     left, chain_code = hmac[0...32], hmac[32...64]
     pk0 = DBTC.int_decode(left)
-    private_key = (pk0 + key[0]) % BitcoinAddressUtils.ecdsa_group.order
-    if pk0 >= BitcoinAddressUtils.ecdsa_group.order || private_key == 0
+    private_key = (pk0 + key[0]) % ecdsa_group_order
+    if pk0 >= ecdsa_group_order || private_key == 0
       return nil  # Invalid key, try next i value
     end
     [private_key, chain_code]
@@ -59,7 +59,7 @@ module DBTC
   def hd_public(key)
     if key[0].is_a?(Integer)
       private_key, chain_code = key
-      public_key = BitcoinAddressUtils.ecdsa_group.new_point private_key
+      public_key = ecdsa_private_to_public private_key
       [public_key, chain_code]
     else
       key
@@ -68,9 +68,8 @@ module DBTC
 
   def hd_id(key)
     key = hd_public(key)
-    key_str = ECDSA::Format::PointOctetString.encode(key[0],
-      compression: true)
-    BitcoinAddressUtils.hash160 key_str
+    key_str = ecdsa_public_encode(key[0])
+    hash160 key_str
   end
 
   def hd_fingerprint(key)

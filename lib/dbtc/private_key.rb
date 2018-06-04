@@ -26,19 +26,12 @@ module DBTC
     metadata = data[32..-1]
     case metadata
     when "\x01"
-      compressed = true
+      compression = true
     when ""
-      compressed = false
+      compression = false
     else
       raise DecodeError, 'Private key metadata unrecognized.'
     end
-    [private_key, compressed]
-  end
-
-  def encoded_private_key_to_encoded_public_key(string)
-    private_key, compressed = private_key_decode(string)
-    public_key = BitcoinAddressUtils.ecdsa_group.new_point private_key
-    ECDSA::Format::PointOctetString.encode public_key,
-      compression: compressed
+    [private_key, compression]
   end
 end

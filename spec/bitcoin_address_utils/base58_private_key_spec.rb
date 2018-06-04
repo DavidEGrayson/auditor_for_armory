@@ -60,24 +60,4 @@ describe 'private_key' do
         DecodeError, 'Private key has wrong size.')
     end
   end
-
-  describe 'encoded_private_key_encoded_public_key' do
-    it 'works with compressed addresses' do
-      public_key_binary = encoded_private_key_to_encoded_public_key(
-        base58_private_key_compressed)
-      expect(public_key_binary).to eq "\x03" \
-        "\x57\xed\x2d\x63\xb7\x1e\x94\x4b\x9f\x0b\x2b\xf7\x49\x11\xea\xdb" \
-        "\x35\xdc\xd9\x60\xae\xd1\xa7\x0d\x6a\x0b\x28\x63\xb8\x1d\xbd\x9d"
-    end
-
-    it 'works with uncompressed addresses' do
-      public_key_binary = encoded_private_key_to_encoded_public_key(
-        base58_private_key_uncompressed)
-      expect(public_key_binary).to eq "\x04" \
-        "\x57\xed\x2d\x63\xb7\x1e\x94\x4b\x9f\x0b\x2b\xf7\x49\x11\xea\xdb" \
-        "\x35\xdc\xd9\x60\xae\xd1\xa7\x0d\x6a\x0b\x28\x63\xb8\x1d\xbd\x9d" \
-        "\x99\xd8\x91\x16\xf9\x5d\xbd\xbf\xf5\x7f\xb0\x45\x26\x74\xf0\x27" \
-        "\xc7\xae\x07\x01\x52\x7d\x80\xc2\x26\xea\x3a\x4c\x3c\x30\x40\x21"
-    end
-  end
 end

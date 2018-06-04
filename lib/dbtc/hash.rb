@@ -1,5 +1,7 @@
 # encoding: ASCII-8BIT
 
+require 'digest'
+
 module DBTC
   def hash256(string)
     Digest::SHA256.digest Digest::SHA256.digest string

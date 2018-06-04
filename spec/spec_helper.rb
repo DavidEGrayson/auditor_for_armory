@@ -6,7 +6,6 @@ if ENV['COVERAGE'] == 'Y'
 end
 
 $LOAD_PATH << 'lib'
-require 'bitcoin_address_utils'
 require 'dbtc'
 include DBTC
 
