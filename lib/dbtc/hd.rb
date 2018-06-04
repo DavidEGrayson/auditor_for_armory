@@ -6,15 +6,6 @@
 module DBTC
   # TODO: get rid of these key array arguments, split into two arguments
 
-  # TODO: try to get rid of this
-  def hd_basic_key_data(key)
-    if key.is_a?(Integer)
-      "\x00" + int_encode(key, 32)
-    else
-      ecdsa_public_encode(key)
-    end
-  end
-
   def hd_generate_master_key(seed)
     hmac = hmac_sha512("Bitcoin seed", seed)
     left, chain_code = hmac[0...32], hmac[32...64]
@@ -36,9 +27,9 @@ module DBTC
   def hd_child_private(key, i)
     if i >= (1 << 31)
       # hardened
-      message = hd_basic_key_data(key[0])
+      message = "\x00" + int_encode(key[0], 32)
     else
-      message = hd_basic_key_data(hd_public(key)[0])
+      message = ecdsa_public_encode(ecdsa_private_to_public(key[0]))
     end
     message << int_encode(i, 4)
     hmac = hmac_sha512(key[1], message)
@@ -97,7 +88,11 @@ module DBTC
     data << parent_fingerprint
     data << int_encode(child_number, 4)
     data << key[1]  # chain code
-    data << hd_basic_key_data(key[0])
+    if key[0].is_a?(Integer)
+      data << "\x00" + int_encode(key[0], 32)
+    else
+      data << ecdsa_public_encode(key[0])
+    end
     base58_check_encode(version, data)
   end
 end
