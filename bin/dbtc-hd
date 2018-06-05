@@ -57,6 +57,8 @@ opts.fetch(:paths).each do |path|
   puts "-"
   puts "  path: #{path_to_str(path)}"
   node = path.inject(master) { |node, num| node.child(num) }
-  puts "  xprv: #{node.encode_private}"
-  puts "  xprv: #{node.encode_public}"
+  puts "  xprv: #{node.xprv}"
+  puts "  xpub: #{node.xpub}"
+  puts "  priv: #{DBTC.private_key_encode(node.private_key)}"
+  puts "  pub:  #{DBTC.public_key_to_address(node.public_key)}"
 end
