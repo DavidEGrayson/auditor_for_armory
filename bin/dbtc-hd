@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+require 'dbtc'
+
+# Does stuff with HD wallets (BIP32/BIP39/BIP44).
+
+# Parses strings like "m/0/123H" or "m/49'/0'/0'/0/1"
+def parse_path_arg(str)
+  path = []
+  parts = str.split('/')
+  parts.shift if parts.first == 'm'
+  parts.map do |part|
+    if !part.match(/\A(\d+)('|H|)\Z/)
+      raise "Invalid path component: #{part.inspect}."
+    end
+    num = $1.to_i
+    num += 0x80000000 if !$2.empty?
+    path << num
+  end
+  path
+end
+
+def path_to_str(path)
+  parts = ['m']
+  path.each do |num|
+    part = (num & 0x7FFFFFFF).to_s
+    if num >= 0x80000000
+      part << 'H'
+    end
+    parts << part
+  end
+  parts.join('/')
+end
+
+def parse_args(argv)
+  opts = { paths: [] }
+  while !argv.empty?
+    arg = argv.shift
+    if !arg.start_with?("-")
+      opts[:paths] << parse_path_arg(arg)
+    elsif arg == "-m" || arg == "--mnemonic"
+      raise "Expected mnemonic string after -m or --mnemonic." if argv.empty?
+      opts[:mnemonic] = argv.shift
+    else
+      raise "Unknown option #{arg}."
+    end
+  end
+  opts
+end
+
+opts = parse_args(ARGV)
+
+seed = DBTC.mnemonic_to_seed(opts.fetch(:mnemonic))
+master = DBTC::HDNode.master(seed)
+
+opts.fetch(:paths).each do |path|
+  puts "-"
+  puts "  path: #{path_to_str(path)}"
+  node = path.inject(master) { |node, num| node.child(num) }
+  puts "  xprv: #{node.encode_private}"
+  puts "  xprv: #{node.encode_public}"
+end

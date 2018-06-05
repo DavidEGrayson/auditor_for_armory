@@ -20,12 +20,7 @@ def dump_info(arg)
   puts
 end
 
-if ARGV.empty?
-  args = ARGF.read.lines.map(&:chomp)
-else
-  args = ARGV
-end
-
+args = ARGV.empty? ? ARGF.read.lines.map(&:chomp) : ARGV
 args.each do |arg|
   dump_info(arg)
 end
