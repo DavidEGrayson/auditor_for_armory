@@ -14,7 +14,7 @@ describe 'mnemonic_seed' do
       expect(seed).to eq hex_to_binary(expected_seed)
 
       private_key, chain_code = DBTC.hd_generate_master_key(seed)
-      xprv = hd_encode(private_key, chain_code, 0, 0, 0)
+      xprv = hd_encode(private_key, chain_code, 0, "\x00" * 4, 0)
       expect(xprv).to eq expected_xprv
     end
   end
