@@ -10,8 +10,8 @@ describe 'mnemonic_seed' do
       mnemonic = entropy_to_mnemonic(hex_to_binary(entropy))
       expect(mnemonic).to eq expected_mnemonic
 
-      seed = mnemonic_to_seed(mnemonic)
-      expect(seed).to eq expected_seed
+      seed = mnemonic_to_seed(mnemonic, "TREZOR")
+      expect(seed).to eq hex_to_binary(expected_seed)
 
       private_key, chain_code = DBTC.hd_generate_master_key(seed)
       xprv = hd_encode(private_key, chain_code, 0, 0, 0)

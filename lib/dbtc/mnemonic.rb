@@ -5,8 +5,14 @@ module DBTC
     password = mnemonic
     salt = "mnemonic" + passphrase
     iteration_count = 2048
-    hmac_sha512()
-    # TODO: PBKDF2 with the parameters above
+    desired_key_size = 64
+    hash_size = 64  # output of hmac_sha512
+    xor_hash = hash = hmac_sha512(password, salt + "\x00\x00\x00\x01")
+    (iteration_count - 1).times do
+      hash = hmac_sha512(password, hash)
+      xor_hash = xor(xor_hash, hash)
+    end
+    xor_hash
   end
 
   def entropy_to_mnemonic(seed)
@@ -26,6 +32,9 @@ module DBTC
     end
     words.reverse.join(' ')
   end
+
+  # TODO: function checking the checksum of a mnemonic (because I don't do that
+  # in mnemonic_to_seed and I think it should be a separate method).
 
   Bip39EnglishWords = %w{
     abandon
