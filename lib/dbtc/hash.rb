@@ -27,6 +27,7 @@ module DBTC
     block_size = 128
     hash = Digest::SHA512.method(:digest)
     key = hash.(key) if key.size > block_size
+    key = key.dup
     key << "\x00" * (block_size - key.size)
     ikey = xor(key, "\x36" * block_size)
     hash1 = hash.(ikey + message)
